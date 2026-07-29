@@ -7,4 +7,8 @@ router.get("/", taskController.getTasks);
 
 router.post("/", taskController.createTask);
 
-export default router;
+router.get("/long-poll", taskController.longPollTasks);
+
+router.get("/events", taskController.sseTasks);
+
+export default router;  

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createTask, getTasks } from "./api/taskApi";
+import { createTask, getTasks,getLongPollingTasks} from "./api/taskApi";
 
 interface Task {
   id: number;
@@ -18,16 +18,52 @@ function App() {
 
   // short polling 
 
-  useEffect(() => {
-    loadTasks();
+  // useEffect(() => {
+  //   loadTasks();
   
-    const interval = setInterval(() => {
-      console.log("Polling...");
-      loadTasks();
-    }, 5000);
+  //   const interval = setInterval(() => {
+  //     console.log("Polling...");
+  //     loadTasks();
+  //   }, 5000);
   
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
+
+  // long polling 
+//   useEffect(() => {
+//     loadTasks();
+
+//     const waitForUpdates = async () => {
+//         const response = await getLongPollingTasks();
+
+//         setTasks(response);
+
+//         waitForUpdates();
+//     };
+
+//     waitForUpdates(); // <-- Start the first request
+
+// }, []);
+
+// server side events 
+
+useEffect(() => {
+
+  const events = new EventSource(
+      "http://localhost:3001/tasks/events"
+  );
+
+  events.onmessage = (event) => {
+
+      const tasks = JSON.parse(event.data);
+
+      setTasks(tasks);
+
+  };
+
+  return () => events.close();
+
+}, []);
 
   const handleCreate = async () => {
     if (!title.trim()) return;

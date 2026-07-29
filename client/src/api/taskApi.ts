@@ -16,3 +16,8 @@ export const createTask = async (title: string) => {
 
   return response.data;
 };
+
+export const getLongPollingTasks = async () => {
+    const response = await api.get("/tasks/long-poll");
+    return response.data;
+  };
