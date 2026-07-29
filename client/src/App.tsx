@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { createTask, getTasks,getLongPollingTasks} from "./api/taskApi";
+import { io } from "socket.io-client";
+
+const socket = io("http://localhost:3001");
 
 interface Task {
   id: number;
@@ -47,23 +50,38 @@ function App() {
 
 // server side events 
 
+// useEffect(() => {
+
+//   const events = new EventSource(
+//       "http://localhost:3001/tasks/events"
+//   );
+
+//   events.onmessage = (event) => {
+
+//       const tasks = JSON.parse(event.data);
+
+//       setTasks(tasks);
+
+//   };
+
+//   return () => events.close();
+
+// }, []);
+
+
+// socket communication 
+
+
 useEffect(() => {
 
-  const events = new EventSource(
-      "http://localhost:3001/tasks/events"
-  );
+  socket.on("task-created", () => {
 
-  events.onmessage = (event) => {
+    loadTasks();
 
-      const tasks = JSON.parse(event.data);
-
-      setTasks(tasks);
-
-  };
-
-  return () => events.close();
+});
 
 }, []);
+
 
   const handleCreate = async () => {
     if (!title.trim()) return;
